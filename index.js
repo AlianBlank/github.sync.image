@@ -30,7 +30,8 @@ class Action {
     }
 
     _executeInProcess(cmd) {
-        this._executeCommand(cmd, { encoding: "utf-8", stdio: [process.stdin, process.stdout, process.stderr] })
+        var result = this._executeCommand(cmd, { encoding: "utf-8", stdio: [process.stdin, process.stdout, process.stderr] })
+        console.log(`result: ${result}`)
     }
 
     // 配置 SSH
@@ -40,10 +41,12 @@ class Action {
 
         console.log(`Set SSH config Start`)
 
-        this._executeInProcess(`mkdir -p ~/.ssh`)
+        this._executeInProcess('mkdir -p ~/.ssh')
+        this._executeInProcess('cd ~/.ssh')
+        this._executeInProcess('ls -a')
         this._executeInProcess(`echo "${this.gitSshIdRsa}" >> ~/.ssh/id_rsa`)
-        this._executeInProcess(`chmod 600 ~/.ssh/id_rsa`)
-        this._executeInProcess(`eval $(ssh-agent -s) && ssh-add ~/.ssh/id_rsa`)
+        this._executeInProcess('chmod 600 ~/.ssh/id_rsa')
+        this._executeInProcess('eval $(ssh-agent -s) && ssh-add ~/.ssh/id_rsa')
         // 信任域名
         this._executeInProcess(`ssh-keyscan -H ${this.gitKnownHosts} >> ~/.ssh/known_hosts`)
 
