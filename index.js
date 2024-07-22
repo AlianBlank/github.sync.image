@@ -167,7 +167,7 @@ class Action {
             // 推送
             console.log(`push remote Start`)
 
-            invokeCmd(`git push -u ${this.gitRemoteName} refs/heads/${this.gitBranchName}:refs/heads/${this.gitBranchName} --tags --verbose`)
+            this._executeInProcess(`git push -u ${this.gitRemoteName} ${this.gitBranchName}`)
 
             console.log(`push remote End`)
         } catch (error) {
