@@ -14,11 +14,12 @@ inputs:
     required: true
   REPOSITORY_URL:
     description: Repository url
-    required: true
+    required: false
+    default: ${{ github.Repository }}
   BRANCH_NAME:
     description: Branch name
     required: false
-    default: main
+    default: ${{ github.ref.name }}
   GIT_EMAIL:
     description: git global email
     required: false
@@ -29,7 +30,7 @@ inputs:
     default: GitHub Action
 
 runs:
-  using: node16
+  using: node20
   main: index.js
 
 branding:
