@@ -31,7 +31,10 @@ class Action {
 
     _executeInProcess(cmd) {
         var result = this._executeCommand(cmd, { encoding: "utf-8", stdio: [process.stdin, process.stdout, process.stderr] })
-        console.log(`result: ${JSON.stringify(result)}`)
+        if (result.status != 0) {
+            this._printErrorAndExit(JSON.stringify(result))
+            console.log(`result: ${JSON.stringify(result)}`)
+        }
     }
 
     // 配置 SSH
@@ -116,6 +119,10 @@ class Action {
 
         console.log(`push remote End`)
 
+    }
+    _printErrorAndExit(msg) {
+        console.log(`##[error]😭 ${msg}`)
+        throw new Error(msg)
     }
 }
 
