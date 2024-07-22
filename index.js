@@ -17,7 +17,11 @@ const SSH_FOLDER_PATH = "~/.ssh";
 // 执行命令
 const invokeCmd = async (cmd) => {
     console.log(`executing: [${cmd}]`)
-    await exec.exec('/bin/sh -c', [`${cmd}`], { silent: true });
+    let result = await exec.getExecOutput('/bin/sh -c', [`${cmd}`], { silent: true });
+    console.log(`result: ${result.stdout}`)
+    if (result.exitCode != 0) {
+        throw new Error(`Command failed with exit code ${result.exitCode}. Output: ${result.stderr}`);
+    }
 }
 
 // 创建文件
