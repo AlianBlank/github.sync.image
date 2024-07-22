@@ -75,7 +75,8 @@ class Action {
         console.log(`Project gitKnownHosts: ${this.gitKnownHosts}`)
 
         this._setGitConfig();
-        this._setSshConfig();
+        // https://github.com/marketplace/actions/ssh-setup
+        // this._setSshConfig();
 
         // 查看当前分支
         console.log(`Look up current branch Start`)
