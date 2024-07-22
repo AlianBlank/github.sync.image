@@ -41,7 +41,7 @@ class Action {
         console.log(`Set SSH config Start`)
 
         this._executeInProcess(`mkdir -p ~/.ssh`)
-        this._executeInProcess(`echo "${this.SSH_ID_RSA}" >> ~/.ssh/id_rsa`)
+        this._executeInProcess(`echo "${this.gitSshIdRsa}" >> ~/.ssh/id_rsa`)
         this._executeInProcess(`chmod 600 ~/.ssh/id_rsa`)
         this._executeInProcess(`eval $(ssh-agent -s) && ssh-add ~/.ssh/id_rsa`)
         // 信任域名
@@ -65,10 +65,10 @@ class Action {
     run() {
         console.log(`Project gitNAME: ${this.gitNAME}`)
         console.log(`Project gitEMail: ${this.gitEMail}`)
-        console.log(`Project gitNAME: ${this.gitNAME}`)
         console.log(`Project gitBranchName: ${this.gitBranchName}`)
         console.log(`Project gitRemoteName: ${this.gitRemoteName}`)
         console.log(`Project gitRepositoryUrl: ${this.gitRepositoryUrl}`)
+        console.log(`Project gitKnownHosts: ${this.gitKnownHosts}`)
 
         this._setGitConfig();
         this._setSshConfig();
