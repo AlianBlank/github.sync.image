@@ -1,0 +1,37 @@
+name: github.sync.image
+author: Blank (@alianblank)
+description: Sync Image To Other
+
+inputs:
+  SSH_ID_RSA:
+    description: SSH private key
+    required: true
+  KNOWN_HOSTS:
+    description: Remote host
+    required: true
+  REMOTE_NAME:
+    description: Remote Name.
+    required: true
+  REPOSITORY_URL:
+    description: REPOSITORY_URL, get use (  ${{ github.Repository }} )
+    required: true
+  BRANCH_NAME:
+    description: Branch name, get use (  ${{ github.ref.name }} )
+    required: false
+    default: main
+  GIT_EMAIL:
+    description: git global email
+    required: false
+    default: action@github.com
+  GIT_NAME:
+    description: git global name
+    required: false
+    default: GitHub Action
+
+runs:
+  using: node16
+  main: index.js
+
+branding:
+  icon: package
+  color: blue
