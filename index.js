@@ -3,6 +3,29 @@ const os = require("os"),
     path = require("path"),
     https = require("https"),
     spawnSync = require("child_process").spawnSync
+const exec = require('@actions/exec');
+const core = require('@actions/core');
+
+const DEFAULT_DIR_MOD = 755;
+const DEFAULT_KEYS_MOD = 600;
+const DEFAULT_SSH_KNOWN_HOSTS_MOD = 644;
+
+const KNOWN_HOSTS_FILE = 'known_hosts';
+const SSH_KEY_NAME = "id_rsa";
+const SSH_FOLDER_PATH = "~/.ssh";
+
+// 创建文件
+const createFileWithDataAndMode = async (data, path, mod) => {
+    await exec.exec('/bin/sh -c', [`echo "${data}" >> ${path}`], { silent: true });
+    await exec.exec('/bin/sh -c', [`chmod ${mod} ${path}`], { silent: true });
+};
+
+// 重新创建文件夹
+const recreateDirWithMod = async (path, mod) => {
+    await exec.exec('/bin/sh -c', [`rm -rf ${path}`], { silent: true });
+    await exec.exec('/bin/sh -c', [`mkdir ${path}`], { silent: true });
+    await exec.exec('/bin/sh -c', [`chmod ${mod} ${path}`], { silent: true });
+};
 
 class Action {
     constructor() {
@@ -38,21 +61,29 @@ class Action {
     }
 
     // 配置 SSH
-    _setSshConfig() {
+    async _setSshConfig() {
 
         // 开始配置 SSH
 
         console.log(`Set SSH config Start`)
 
-        this._executeInProcess('mkdir -p ~/.ssh')
-        this._executeInProcess('pwd')
-        this._executeInProcess('cd ~/.ssh')
-        this._executeInProcess('ls -a')
-        this._executeInProcess(`echo "${this.gitSshIdRsa}" >> ~/.ssh/id_rsa`)
-        this._executeInProcess('chmod 600 ~/.ssh/id_rsa')
-        this._executeInProcess('eval $(ssh-agent -s) && ssh-add ~/.ssh/id_rsa')
+        // this._executeInProcess('mkdir -p ~/.ssh')
+        // this._executeInProcess('pwd')
+        // this._executeInProcess('cd ~/.ssh')
+        // this._executeInProcess('ls -a')
+        // this._executeInProcess(`echo "${this.gitSshIdRsa}" >> ~/.ssh/id_rsa`)
+        // this._executeInProcess('chmod 600 ~/.ssh/id_rsa')
+        // this._executeInProcess('eval $(ssh-agent -s) && ssh-add ~/.ssh/id_rsa')
         // 信任域名
-        this._executeInProcess(`ssh-keyscan -H ${this.gitKnownHosts} >> ~/.ssh/known_hosts`)
+        // this._executeInProcess(`ssh-keyscan -H ${this.gitKnownHosts} >> ~/.ssh/known_hosts`)
+
+        const FULL_SSH_PRIVATE_KEY_PATH = `${SSH_FOLDER_PATH}/${SSH_KEY_NAME}`;
+        const FULL_KNOWN_HOSTS_PATH = `${SSH_FOLDER_PATH}/${KNOWN_HOSTS_FILE}`;
+
+        await recreateDirWithMod(SSH_FOLDER_PATH, DEFAULT_DIR_MOD);
+
+        await createFileWithDataAndMode(this.gitSshIdRsa, FULL_SSH_PRIVATE_KEY_PATH, DEFAULT_KEYS_MOD);
+        await createFileWithDataAndMode(this.gitKnownHosts, FULL_KNOWN_HOSTS_PATH, DEFAULT_SSH_KNOWN_HOSTS_MOD);
 
         console.log(`Set SSH config End`)
 
@@ -69,56 +100,60 @@ class Action {
     }
 
 
-    run() {
-        console.log(`Project gitNAME: ${this.gitNAME}`)
-        console.log(`Project gitEMail: ${this.gitEMail}`)
-        console.log(`Project gitBranchName: ${this.gitBranchName}`)
-        console.log(`Project gitRemoteName: ${this.gitRemoteName}`)
-        console.log(`Project gitRepositoryUrl: ${this.gitRepositoryUrl}`)
-        console.log(`Project gitKnownHosts: ${this.gitKnownHosts}`)
+    async run() {
+        try {
+            console.log(`Project gitNAME: ${this.gitNAME}`)
+            console.log(`Project gitEMail: ${this.gitEMail}`)
+            console.log(`Project gitBranchName: ${this.gitBranchName}`)
+            console.log(`Project gitRemoteName: ${this.gitRemoteName}`)
+            console.log(`Project gitRepositoryUrl: ${this.gitRepositoryUrl}`)
+            console.log(`Project gitKnownHosts: ${this.gitKnownHosts}`)
 
-        this._setGitConfig();
-        // https://github.com/marketplace/actions/ssh-setup
-        // this._setSshConfig();
+            this._setGitConfig();
 
-        // 查看当前分支
-        console.log(`Look up current branch Start`)
+            // https://github.com/marketplace/actions/ssh-setup
+            await this._setSshConfig();
 
-        console.log(`Check current branch`)
-        this._executeInProcess(`echo 当前分支：${this.gitBranchName} ${this.gitRepositoryUrl}`)
+            // 查看当前分支
+            console.log(`Look up current branch Start`)
 
-        console.log(`Look up current branch End`)
+            console.log(`Check current branch`)
+            this._executeInProcess(`echo 当前分支：${this.gitBranchName} ${this.gitRepositoryUrl}`)
 
-
-        // 查看远程分支
-        console.log(`add remote url Start`)
-
-        this._executeInProcess(`git remote add ${this.gitRemoteName} "git@${this.gitKnownHosts}:${this.gitRepositoryUrl}.git"`)
-
-        console.log(`add remote url End`)
+            console.log(`Look up current branch End`)
 
 
-        // 从远程获取
-        console.log(`fetch remote Start`)
+            // 查看远程分支
+            console.log(`add remote url Start`)
 
-        this._executeInProcess(`git fetch --prune ${this.gitRemoteName} --tags --verbose`)
+            this._executeInProcess(`git remote add ${this.gitRemoteName} "git@${this.gitKnownHosts}:${this.gitRepositoryUrl}.git"`)
 
-        console.log(`fetch remote End`)
+            console.log(`add remote url End`)
 
-        // 从远程拉取
-        console.log(`pull remote Start`)
 
-        this._executeInProcess(`git pull --rebase=false ${this.gitRemoteName} ${this.gitBranchName} --tags --verbose`)
+            // 从远程获取
+            console.log(`fetch remote Start`)
 
-        console.log(`pull remote End`)
+            this._executeInProcess(`git fetch --prune ${this.gitRemoteName} --tags --verbose`)
 
-        // 推送
-        console.log(`push remote Start`)
+            console.log(`fetch remote End`)
 
-        this._executeInProcess(`git push ${this.gitRemoteName} refs/heads/${this.gitBranchName}:refs/heads/${this.gitBranchName} --tags --verbose`)
+            // 从远程拉取
+            console.log(`pull remote Start`)
 
-        console.log(`push remote End`)
+            this._executeInProcess(`git pull --rebase=false ${this.gitRemoteName} ${this.gitBranchName} --tags --verbose`)
 
+            console.log(`pull remote End`)
+
+            // 推送
+            console.log(`push remote Start`)
+
+            this._executeInProcess(`git push ${this.gitRemoteName} refs/heads/${this.gitBranchName}:refs/heads/${this.gitBranchName} --tags --verbose`)
+
+            console.log(`push remote End`)
+        } catch (error) {
+            core.setFailed(error.message);
+        }
     }
     _printErrorAndExit(msg) {
         console.log(`##[error]😭 ${msg}`)

@@ -1,0 +1,18 @@
+{
+    "name": "github.sync.image",
+    "description": "Sync GitHub Other image",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/alianblank/github.sync.image"
+    },
+    "engines": {
+        "node": ">=20"
+    },
+    "version": "1.0.0",
+    "license": "MIT",
+    "main": "index.js",
+    "dependencies": {
+        "@actions/core": "^1.10.1",
+        "@actions/exec": "^1.1.1"
+    }
+}
