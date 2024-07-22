@@ -13,10 +13,10 @@ inputs:
     description: Remote Name.
     required: true
   REPOSITORY_URL:
-    description: REPOSITORY_URL, get use (  ${{ github.Repository }} )
+    description: Repository url
     required: true
   BRANCH_NAME:
-    description: Branch name, get use (  ${{ github.ref.name }} )
+    description: Branch name
     required: false
     default: main
   GIT_EMAIL:
