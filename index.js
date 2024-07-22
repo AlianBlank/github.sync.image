@@ -14,6 +14,12 @@ const KNOWN_HOSTS_FILE = 'known_hosts';
 const SSH_KEY_NAME = "id_rsa";
 const SSH_FOLDER_PATH = "~/.ssh";
 
+// 执行命令
+const invokeCmd = async (cmd) => {
+    console.log(`executing: [${cmd}]`)
+    await exec.exec('/bin/sh -c', [`${cmd}`], { silent: true });
+}
+
 // 创建文件
 const createFileWithDataAndMode = async (data, path, mod) => {
     await exec.exec('/bin/sh -c', [`echo "${data}" >> ${path}`], { silent: true });
@@ -93,8 +99,8 @@ class Action {
     _setGitConfig() {
         console.log(`Set up Git user config Start`)
 
-        this._executeInProcess(`git config --global user.email "${this.gitEMail}"`)
-        this._executeInProcess(`git config --global user.name "${this.gitNAME}"`)
+        invokeCmd(`git config --global user.email "${this.gitEMail}"`)
+        invokeCmd(`git config --global user.name "${this.gitNAME}"`)
 
         console.log(`Set up Git user config End`)
     }
@@ -118,7 +124,7 @@ class Action {
             console.log(`Look up current branch Start`)
 
             console.log(`Check current branch`)
-            this._executeInProcess(`echo 当前分支：${this.gitBranchName} ${this.gitRepositoryUrl}`)
+            invokeCmd(`echo 当前分支：${this.gitBranchName} ${this.gitRepositoryUrl}`)
 
             console.log(`Look up current branch End`)
 
@@ -126,29 +132,36 @@ class Action {
             // 查看远程分支
             console.log(`add remote url Start`)
 
-            this._executeInProcess(`git remote add ${this.gitRemoteName} "git@${this.gitKnownHosts}:${this.gitRepositoryUrl}.git"`)
+            invokeCmd(`git remote add ${this.gitRemoteName} "git@${this.gitKnownHosts}:${this.gitRepositoryUrl}.git"`)
 
             console.log(`add remote url End`)
 
 
             // 从远程获取
+            console.log(` remote Start`)
+
+            invokeCmd('git remote -v')
+
+            console.log(` remote End`)
+
+            // 从远程获取
             console.log(`fetch remote Start`)
 
-            this._executeInProcess(`git fetch --prune ${this.gitRemoteName} --tags --verbose`)
+            invokeCmd(`git fetch --prune ${this.gitRemoteName} --tags --verbose`)
 
             console.log(`fetch remote End`)
 
             // 从远程拉取
             console.log(`pull remote Start`)
 
-            this._executeInProcess(`git pull --rebase=false ${this.gitRemoteName} ${this.gitBranchName} --tags --verbose`)
+            invokeCmd(`git pull --rebase=false ${this.gitRemoteName} ${this.gitBranchName} --tags --verbose`)
 
             console.log(`pull remote End`)
 
             // 推送
             console.log(`push remote Start`)
 
-            this._executeInProcess(`git push ${this.gitRemoteName} refs/heads/${this.gitBranchName}:refs/heads/${this.gitBranchName} --tags --verbose`)
+            invokeCmd(`git push ${this.gitRemoteName} refs/heads/${this.gitBranchName}:refs/heads/${this.gitBranchName} --tags --verbose`)
 
             console.log(`push remote End`)
         } catch (error) {
