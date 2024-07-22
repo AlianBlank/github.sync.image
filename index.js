@@ -31,7 +31,7 @@ class Action {
 
     _executeInProcess(cmd) {
         var result = this._executeCommand(cmd, { encoding: "utf-8", stdio: [process.stdin, process.stdout, process.stderr] })
-        console.log(`result: ${result}`)
+        console.log(`result: ${JSON.stringify(result)}`)
     }
 
     // 配置 SSH
@@ -42,6 +42,7 @@ class Action {
         console.log(`Set SSH config Start`)
 
         this._executeInProcess('mkdir -p ~/.ssh')
+        this._executeInProcess('pwd')
         this._executeInProcess('cd ~/.ssh')
         this._executeInProcess('ls -a')
         this._executeInProcess(`echo "${this.gitSshIdRsa}" >> ~/.ssh/id_rsa`)
