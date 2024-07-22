@@ -64,9 +64,9 @@ class Action {
 
     _executeInProcess(cmd) {
         var result = this._executeCommand(cmd, { encoding: "utf-8", stdio: [process.stdin, process.stdout, process.stderr] })
+        console.log(`result: ${JSON.stringify(result)}`)
         if (result.status != 0) {
             this._printErrorAndExit(JSON.stringify(result))
-            console.log(`result: ${JSON.stringify(result)}`)
         }
     }
 
@@ -126,6 +126,8 @@ class Action {
 
             // 查看当前分支
             console.log(`Look up current branch Start`)
+
+            this._executeInProcess(`git config --list`)
 
             console.log(`Check current branch`)
             this._executeInProcess(`echo 当前分支：${this.gitBranchName} ${this.gitRepositoryUrl}`)
