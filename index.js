@@ -128,7 +128,7 @@ class Action {
             console.log(`Look up current branch Start`)
 
             console.log(`Check current branch`)
-            invokeCmd(`echo 当前分支：${this.gitBranchName} ${this.gitRepositoryUrl}`)
+            // invokeCmd(`echo 当前分支：${this.gitBranchName} ${this.gitRepositoryUrl}`)
 
             console.log(`Look up current branch End`)
 
