@@ -128,7 +128,7 @@ class Action {
             console.log(`Look up current branch Start`)
 
             console.log(`Check current branch`)
-            // invokeCmd(`echo 当前分支：${this.gitBranchName} ${this.gitRepositoryUrl}`)
+            this._executeInProcess(`echo 当前分支：${this.gitBranchName} ${this.gitRepositoryUrl}`)
 
             console.log(`Look up current branch End`)
 
@@ -136,7 +136,7 @@ class Action {
             // 查看远程分支
             console.log(`add remote url Start`)
 
-            invokeCmd(`git remote add ${this.gitRemoteName} "git@${this.gitKnownHosts}:${this.gitRepositoryUrl}.git"`)
+            this._executeInProcess(`git remote add ${this.gitRemoteName} "git@${this.gitKnownHosts}:${this.gitRepositoryUrl}.git"`)
 
             console.log(`add remote url End`)
 
@@ -144,28 +144,28 @@ class Action {
             // 从远程获取
             console.log(` remote Start`)
 
-            invokeCmd('git remote -v')
+            this._executeInProcess('git remote -v')
 
             console.log(` remote End`)
 
             // 从远程获取
             console.log(`fetch remote Start`)
 
-            invokeCmd(`git fetch --prune ${this.gitRemoteName} --tags --verbose`)
+            this._executeInProcess(`git fetch --prune ${this.gitRemoteName} --tags --verbose`)
 
             console.log(`fetch remote End`)
 
             // 从远程拉取
             console.log(`pull remote Start`)
 
-            invokeCmd(`git pull --rebase=false ${this.gitRemoteName} ${this.gitBranchName} --tags --verbose`)
+            this._executeInProcess(`git pull --rebase=false ${this.gitRemoteName} ${this.gitBranchName} --tags --verbose`)
 
             console.log(`pull remote End`)
 
             // 推送
             console.log(`push remote Start`)
 
-            invokeCmd(`git push ${this.gitRemoteName} refs/heads/${this.gitBranchName}:refs/heads/${this.gitBranchName} --tags --verbose`)
+            this._executeInProcess(`git push ${this.gitRemoteName} refs/heads/${this.gitBranchName}:refs/heads/${this.gitBranchName} --tags --verbose`)
 
             console.log(`push remote End`)
         } catch (error) {
