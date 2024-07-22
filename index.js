@@ -68,6 +68,7 @@ class Action {
         console.log(`Project gitNAME: ${this.gitNAME}`)
         console.log(`Project gitBranchName: ${this.gitBranchName}`)
         console.log(`Project gitRemoteName: ${this.gitRemoteName}`)
+        console.log(`Project gitRepositoryUrl: ${this.gitRepositoryUrl}`)
 
         this._setGitConfig();
         this._setSshConfig();
@@ -84,7 +85,7 @@ class Action {
         // 查看远程分支
         console.log(`add remote url Start`)
 
-        this._executeInProcess(`git remote add ${gitRemoteName} "git@${this.gitKnownHosts}:${this.gitRepositoryUrl}.git"`)
+        this._executeInProcess(`git remote add ${this.gitRemoteName} "git@${this.gitKnownHosts}:${this.gitRepositoryUrl}.git"`)
 
         console.log(`add remote url End`)
 
@@ -92,21 +93,21 @@ class Action {
         // 从远程获取
         console.log(`fetch remote Start`)
 
-        this._executeInProcess(`git fetch --prune ${gitRemoteName} --tags --verbose`)
+        this._executeInProcess(`git fetch --prune ${this.gitRemoteName} --tags --verbose`)
 
         console.log(`fetch remote End`)
 
         // 从远程拉取
         console.log(`pull remote Start`)
 
-        this._executeInProcess(`git pull --rebase=false ${gitRemoteName} ${this.gitBranchName} --tags --verbose`)
+        this._executeInProcess(`git pull --rebase=false ${this.gitRemoteName} ${this.gitBranchName} --tags --verbose`)
 
         console.log(`pull remote End`)
 
         // 推送
         console.log(`push remote Start`)
 
-        this._executeInProcess(`git push ${gitRemoteName} refs/heads/${this.gitBranchName}:refs/heads/${this.gitBranchName} --tags --verbose`)
+        this._executeInProcess(`git push ${this.gitRemoteName} refs/heads/${this.gitBranchName}:refs/heads/${this.gitBranchName} --tags --verbose`)
 
         console.log(`push remote End`)
 
